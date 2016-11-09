@@ -13,15 +13,24 @@
 				<input disabled type="text" name="userName" value="{{currentUser.username}}">
 			</div>
 		</div>
+		<div class="col-md-2">
+			<button class="btn btn-primary text-capitalize" ng-click="onAddUser();">add</button>
+		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 			<div class="row">
 				<div class="col-md-12">
-					<table ng-table="vm.tableParams" class="table" show-filter="true">
+					<table ng-table="vm.tableParams" class="table" show-filter="false">
 						<tr ng-repeat="user in $data">
-							<td title="'Name'" filter="{ name: 'text'}" sortable="'name'">{{user.name}}</td>
-							<td title="'Age'" filter="{ age: 'number'}" sortable="'age'">{{user.age}}</td>
+							<td title="'username'" >{{user.username}}</td>
+							<td title="'setting'" >{{user.setting}}</td>
+							<td title="'role'" >{{user.role}}</td>
+							<td title="'edit'">
+								<button class="btn btn-primary text-capitalize" ng-click="onEditUser(user.id);">edit</button>
+								<button class="btn btn-primary text-capitalize" ng-click="onDeleteUser(user.id);">delete</button>
+								<button class="btn btn-primary text-capitalize" ng-click="onDeleteUser(user.id);">view</button>
+							</td>
 						</tr>
 					</table>
 				</div>

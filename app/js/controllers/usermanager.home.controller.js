@@ -45,7 +45,8 @@
       $scope.currentUser = $rootScope.globals.currentUser;
       $scope.oldSetting = angular.copy($scope.currentUser.setting);
 
-
+      var userList = $rootScope.globals.userList;
+      self.tableParams = new NgTableParams({}, { dataset: userList});
       //loadCurrentUser();
       //loadAllUsers();
     }
