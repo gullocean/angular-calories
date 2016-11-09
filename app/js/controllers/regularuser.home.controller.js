@@ -5,13 +5,18 @@
     .module('calories')
     .controller('RegularUserHomeController', RegularUserHomeController);
 
-  RegularUserHomeController.$inject = ['$rootScope', '$scope', '$http', 'NgTableParams', '$cookieStore', '$moment'];
+  RegularUserHomeController.$inject = ['$rootScope', '$scope', '$http', 'NgTableParams', '$cookieStore', '$moment', '$modal'];
 
-  function RegularUserHomeController($rootScope, $scope, $http, NgTableParams, $cookieStore, $moment) {
+  function RegularUserHomeController($rootScope, $scope, $http, NgTableParams, $cookieStore, $moment, $modal) {
     var self = this;
     var startDateTime = new Date('2015-01-25 03:00:00'),
         endDateTime   = new Date('2015-08-20 15:00:00');
-    
+    // Pre-fetch an external template populated with a custom scope
+    var myOtherModal = $modal({scope: $scope, title: "Add a new meal", templateUrl: 'public/views/addmeal.modal.html', show: false});
+    // Show when some event occurs (use $promise property to ensure the template has been loaded)
+    $scope.showModal = function() {
+      myOtherModal.$promise.then(myOtherModal.show);
+    };
     $scope.onUpdateSetting = function() {
       if ($scope.flagEdit) {
         //$http
@@ -40,19 +45,18 @@
     function initController() {
       $scope.filterData = {
         date: {
-          startDate: angular.copy(startDateTime),
-          endDate: angular.copy(endDateTime)
+          startDate: null,
+          endDate: null
         },
         time: {
-          startTime: angular.copy(startDateTime),
-          endTime: angular.copy(endDateTime)
+          startTime: null,
+          endTime: null
         }
       };
       $scope.currentUser = $rootScope.globals.currentUser;
       $scope.oldSetting = $scope.currentUser.setting;
       var caloriesList = $rootScope.globals.caloriesList;
       self.tableParams = new NgTableParams({}, { dataset: caloriesList});
-      console.log($moment($scope.filterData.time.startTime, "YYYYMMDD").format());
     }
 
     initController();

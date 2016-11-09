@@ -37,30 +37,34 @@
 				</div>
 				<div class="col-md-4">
 					<label for="time" class="text-capitalize col-md-4 text-right">time</label>
-					<div class="input-group">
-            <input type="text" class="form-control" size="8" ng-model="filterData.time.startTime" name="time" bs-timepicker
-            data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" maxTime="{{filterData.time.endTime}}">
-            <span class="input-group-addon">to</span>
-            <input type="text" class="form-control" size="8" ng-model="filterData.time.endTime" name="time" bs-timepicker
-            data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" minTime="{{filterData.time.startTime}}">
+					<div class="input-group col-md-8">
+						<form name="timepickerForm" class="form-inline" role="form">
+							<div class="row">
+								<div class="form-group col-md-5" ng-class="{'has-error': timepickerForm.startTime.$invalid}">
+			            <input type="text" class="form-control" size="8" ng-model="filterData.time.startTime" name="startTime" bs-timepicker
+			            data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" data-min-time="05:00" data-maxTime="filterData.time.endTime">
+		            </div>
+		            <div class="input-group-addon col-md-2">to</div>
+		            <div class="form-group col-md-5" ng-class="{'has-error': timepickerForm.endTime.$invalid}">
+			            <input type="text" class="form-control" size="8" ng-model="filterData.time.endTime" name="endTime" bs-timepicker
+			            data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" data-min-time="05:00" data-maxTime="filterData.time.startTime">
+		            </div>
+							</div>
+            </form>
           </div>
 				</div>
 				<div class="col-md-2">
-					<button class="btn btn-primary text-capitalize pull-right" ng-click="onFilter();">filter</button>
-				</div>
-				<div class="col-md-2">
-					<button class="btn btn-primary text-capitalize" ng-click="onAddMeal();">add</button>
+					<button type="button" class="btn btn-primary text-capitalize" data-animation="am-fade-and-slide-top" ng-click="showModal()">add</button>
 				</div>
 			</div>
 			<div class="row">
-			{{filterData}}
 				<div class="col-md-12">
 					<table ng-table="vm.tableParams" class="table" show-filter="false">
-						<tr ng-repeat="meal in $data">
-							<td title="'date'" filter="{rangeDate: filterData.date.startDate: filterData.date.endDate}" sortable="'date'">{{meal.date}}</td>
+						<tr ng-repeat="meal in $data | rangeDate:filterData">
+							<td title="'date'" filter="{ date: 'text'}" sortable="'date'">{{meal.date}}</td>
 							<td title="'time'" filter="{ time: 'text'}" sortable="'time'">{{meal.time}}</td>
-							<td title="'meal'" sortable="'meal'">{{meal.meal}}</td>
-							<td title="'calories'" sortable="'calories'">{{meal.calories}}</td>
+							<td title="'meal'" filter="{ time: 'text'}" sortable="'meal'">{{meal.meal}}</td>
+							<td title="'calories'" filter="{ time: 'text'}" sortable="'calories'">{{meal.calories}}</td>
 							<td title="'edit'">
 								<button class="btn btn-primary text-capitalize" ng-click="onEditMeal(meal.id);">edit</button>
 								<button class="btn btn-primary text-capitalize" ng-click="onDeleteMeal(meal.id);">delete</button>

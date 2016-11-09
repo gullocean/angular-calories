@@ -16,6 +16,11 @@
       'angular-momentjs'
     ])
     .config(config)
+    .config(function($modalProvider) {
+      angular.extend($modalProvider.defaults, {
+        html: true
+      });
+    })
     .run(run)
     .constant('ROLE', {
       ADMIN: 0,
@@ -23,19 +28,47 @@
       REGULAR_USER: 2
     })
     .constant('DATE_FORMAT', 'YYYY-MM-DD')
-    .filter("rangeDate", function() {
-      return function(items, from, to) {
-        if (from === null || to === null) return items;
-        var df = $moment(from, DATE_FORMAT);
-        var dt = $moment(to, DATE_FORMAT);
+    .constant('TIME_FORMAT', 'HH:mm:ss')
+    .constant('API_URL', 'http://192.168.0.28/api/')
+    .filter("rangeDate", function($moment, DATE_FORMAT, TIME_FORMAT) {
+      return function(items, filterDate) {
+        if (items === null || angular.isUndefined(items)) return null;
+
+        var minDate, maxDate, minTime, maxTime;
+
+        for (var i in items) {
+          if (i == 0) {
+            minDate = $moment(items[i].date, DATE_FORMAT);
+            maxDate = $moment(items[i].date, DATE_FORMAT);
+            minTime = $moment(items[i].time, TIME_FORMAT);
+            maxTime = $moment(items[i].time, TIME_FORMAT);
+          }
+          if (minDate.isAfter($moment(items[i].date, DATE_FORMAT)))  minDate = $moment(items[i].date, DATE_FORMAT);
+          if (maxDate.isBefore($moment(items[i].date, DATE_FORMAT))) maxDate = $moment(items[i].date, DATE_FORMAT);
+          if (minTime.isAfter($moment(items[i].time, TIME_FORMAT)))  minTime = $moment(items[i].time, TIME_FORMAT);
+          if (maxTime.isBefore($moment(items[i].time, TIME_FORMAT))) maxTime = $moment(items[i].time, TIME_FORMAT);
+        }
+
+        var df = filterDate.date.startDate,
+            dt = filterDate.date.endDate,
+            tf = filterDate.time.startTime,
+            tt = filterDate.time.endTime;
+
+        df = df === null ? minDate.subtract(1, 'days') : $moment(df, DATE_FORMAT);
+        dt = dt === null ? maxDate.add(1, 'days') : $moment(dt, DATE_FORMAT);
+        tf = tf === null ? minTime.subtract(1, 'minutes') : $moment($moment(tf).format(TIME_FORMAT), TIME_FORMAT);
+        tt = tt === null ? maxTime.add(1, 'minutes') : $moment($moment(tt).format(TIME_FORMAT), TIME_FORMAT);
+
         var result = [];     
-        for (var i=0; i<items.length; i++){
-          var tf = new Date(items[i].date1 * 1000),
-              tt = new Date(items[i].date2 * 1000);
-          if (items[i].date > from && items[i].date < to)  {
+        for (var i in items){
+          if (angular.isUndefined(items[i].date)) continue;
+          var d = $moment(items[i].date, DATE_FORMAT);
+          var t = $moment(items[i].time, TIME_FORMAT);
+          if ((d.isAfter($moment(df)) && d.isBefore($moment(dt))) &&
+              (t.isAfter($moment(tf)) && t.isBefore($moment(tt))))  {
             result.push(items[i]);
           }
-        }            
+        }
         return result;
       };
     });

@@ -5,9 +5,9 @@
     .module('calories')
     .factory('AuthenticationService', AuthenticationService);
 
-  AuthenticationService.$inject = ['$http', '$cookieStore', '$rootScope', '$timeout', 'md5'];
+  AuthenticationService.$inject = ['$http', '$cookieStore', '$rootScope', '$timeout', 'md5', 'API_URL'];
 
-  function AuthenticationService($http, $cookieStore, $rootScope, $timeout, md5) {
+  function AuthenticationService($http, $cookieStore, $rootScope, $timeout, md5, API_URL) {
     var service = {};
 
     service.Login = Login;
@@ -24,7 +24,7 @@
       });
       $http({
         method: 'POST',
-        url: 'http://192.168.0.28/api/',
+        url: API_URL,
         data: data
       }).success(function(response) {
         callback(response);
