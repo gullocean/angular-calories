@@ -43,4 +43,20 @@ html {
 .modal {
 	z-index: 1050;
 	display: block;
+	.modal-dialog {
+		.modal-content {
+			.modal-body {
+				.row {
+					margin-bottom: 5px;
+				}
+			}
+		}
+	}
+}
+#userSetting {
+	width: 40%;
+}
+.alert {
+	margin-bottom: 0px;
+	border: none;
 }

@@ -1,9 +1,10 @@
 <nav class="navbar navbar-default">
-	<div class="container">
+	<div class="container col-md-4">
 		<div class="navbar-header">
 			<a class="navbar-brand" href="#/login">Logout</a>
 		</div>
 	</div>
+	<div class="col-md-4" id="alerts-container"></div>
 </nav>
 <div class="container-fluid">
 	<div class="row">
@@ -12,13 +13,13 @@
 				<div class="col-md-4">
 					<div class="form-group row">
 						<label for="userName" class="text-capitalize col-md-4 text-right">user name</label>
-						<input disabled type="text" name="userName" value="{{currentUser.username}}" class="col-md-8">
+						<input disabled type="text" name="userName" value="{{currentUser.username}}" class="form-control col-md-8">
 					</div>
 				</div>
-				<div class="col-md-8">
+				<div class="col-md-6">
 					<div class="form-group" ng-init="flagEdit=false">
 						<label for="userSetting" class="text-capitalize col-md-2 text-right">setting</label>
-						<input ng-disabled="!flagEdit" type="number" name="userSetting" ng-model="currentUser.setting">
+						<input ng-disabled="!flagEdit" type="number" name="userSetting" id="userSetting" ng-model="currentUser.setting" class="form-control col-md-8">
 						<button class="btn btn-primary text-capitalize" ng-click="onUpdateSetting();flagEdit=!flagEdit;">{{flagEdit ? "update" : "edit"}}</button>
 						<button ng-if="flagEdit" class="btn btn-primary text-capitalize" ng-click="onCancelSetting();">cancel</button>
 					</div>

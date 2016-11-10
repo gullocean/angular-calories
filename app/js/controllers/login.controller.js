@@ -24,7 +24,6 @@
           response.currentUser.role = +response.currentUser.role;
           response.currentUser.setting = +response.currentUser.setting;
           response.currentUser.id = +response.currentUser.id;
-          console.log(response);
           AuthenticationService.SetCredentials(response);
           switch(response.currentUser.role) {
             case ROLE.ADMIN:

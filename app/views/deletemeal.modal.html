@@ -9,19 +9,19 @@
 				<form name="datepickerForm" class="form-inline" role="form">
 					<div class="row" ng-class="{'has-error': datepickerForm.date.$invalid}">
 						<label class="control-label col-md-3 text-right text-capitalize">date </label>
-						<input type="text" class="form-control col-md-3" ng-model="new_calories.date" data-date-format="yyyy-MM-dd" name="date" bs-datepicker>
+						<input type="text" class="form-control col-md-3" ng-model="newMeal.date" data-date-format="yyyy-MM-dd" name="date" bs-datepicker>
 					</div>
 					<div class="row" ng-class="{'has-error': timepickerForm.time.$invalid}">
 						<label class="control-label col-md-3 text-right text-capitalize">time </label>
-						<input type="text" class="form-control col-md-3" size="8" ng-model="new_calories.time" name="time" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
+						<input type="text" class="form-control col-md-3" size="8" ng-model="newMeal.time" name="time" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
 					</div>
 					<div class="row" ng-class="{'has-error': timepickerForm.meal.$invalid}">
 						<label class="control-label col-md-3 text-right text-capitalize">meal </label>
-						<input type="text" class="form-control col-md-3" size="8" ng-model="new_calories.meal" name="meal">
+						<input type="text" class="form-control col-md-3" size="8" ng-model="newMeal.meal" name="meal">
 					</div>
 					<div class="row" ng-class="{'has-error': timepickerForm.calories.$invalid}">
 						<label class="control-label col-md-3 text-right text-capitalize">calories </label>
-						<input type="number" class="form-control col-md-3" size="8" ng-model="new_calories.calories" name="calories" 	min="0">
+						<input type="number" class="form-control col-md-3" size="8" ng-model="newMeal.calories" name="calories" 	min="0">
 					</div>
 				</form>
 			</div>

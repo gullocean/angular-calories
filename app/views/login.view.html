@@ -1,10 +1,9 @@
 <div class="jumbotron">
   <div class="container">
     <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div ng-class="{ 'alert': flash, 'alert-success': flash.type === 'success', 'alert-danger': flash.type === 'error' }" ng-if="flash" ng-bind="flash.message"></div>
-        </div>
-      
+      <div class="col-md-6 col-md-offset-3">
+        <div ng-class="{ 'alert': flash, 'alert-success': flash.type === 'success', 'alert-danger': flash.type === 'error' }" ng-if="flash" ng-bind="flash.message"></div>
+      </div>
       <div class="col-md-6 col-md-offset-3">
         <h2>Login</h2>
         <form name="form" ng-submit="vm.login()" role="form">
