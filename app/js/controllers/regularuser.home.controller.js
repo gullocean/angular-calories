@@ -26,9 +26,10 @@
       }
     };
     vm.user_id = -1;
+
     initController();
+
     function initController() {
-      
       if (!AuthenticationService.CheckCredential()) $location.path('/login');
       vm.currentUser = AuthenticationService.GetCredential('currentUser');
       var params = $location.search();
@@ -128,12 +129,16 @@
       });
     }
     $scope.onDeleteCalories = function(calories) {
+      usSpinnerService.spin('spinner');
       RestAPI.DeleteCalories(calories.id, function(response) {
         SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
         if (!response.resultCode) {
           vm.calories.splice(vm.calories.indexOf(vm.selected_calories), 1);
           vm.tableParams.reload();
           CheckSetting();
+          usSpinnerService.stop('spinner');
+        } else {
+          usSpinnerService.stop('spinner');
         }
       });
     }
@@ -142,21 +147,21 @@
       calories.time = $moment(calories.time, TIME_FORMAT).format(TIME_FORMAT);
       calories.user_id = vm.currentUser.id;
       vm.new_calories = {id: null, date: null, time: null, meal: null, calories: null, user_id: null};
+      usSpinnerService.spin('spinner');
       RestAPI.CreateCalories(calories, function(response) {
         SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
         if (!response.resultCode) {
-          var temp;
-          response.calories.time = $moment(response.calories.TIME_FORMAT, TIME_FORMAT).format(TIME_FORMAT);
-          if (vm.calories != null && vm.calories.length > 0) {
-            temp = angular.copy(vm.calories[0]);
-            var keys = Object.keys(response.calories);
-            keys.forEach(function(key) {
-              temp[key] = response.calories[key];
-            });
-          } else {
-            temp = angular.copy(response.calories);
-          }
-          initController();
+          var new_calories = response.calories;
+          new_calories.calories = +new_calories.calories;
+          new_calories.id = +new_calories.id;
+          new_calories.user_id = +new_calories.user_id;
+          new_calories.time = $moment(new_calories.time, TIME_FORMAT).format(TIME_FORMAT);
+          vm.calories.unshift(new_calories);
+          vm.tableParams.reload();
+          CheckSetting();
+          usSpinnerService.stop('spinner');
+        } else {
+          usSpinnerService.stop('spinner');
         }
       });
     }

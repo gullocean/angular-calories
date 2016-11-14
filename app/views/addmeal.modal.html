@@ -6,24 +6,29 @@
 				<h4 class="modal-title ng-binding" ng-bind-html="title">Title</h4>
 			</div>
 			<div class="modal-body">
-				<div ng-class="{ 'alert': flash, 'alert-success': flash.type === 'success', 'alert-danger': flash.type === 'error' }" ng-if="flash" ng-bind="flash.message"></div>
 				<form name="form" class="form-inline" role="form">
-					<div class="row" ng-class="{ 'has-error': form.date.$dirty && form.date.$error.required }">
-            <label for="date" class="col-md-3 text-right text-capitalize">date</label>
-            <input type="text" name="calories" class="form-control" ng-model="vm.new_calories.date" data-date-format="yyyy-MM-dd" bs-datepicker required />
-            <span ng-show="form.date.$dirty && form.date.$error.required" class="help-block col-md-offset-4">Date is required</span>
+					<div class="row" ng-class="{ 'has-error': (form.date.$dirty && form.date.$error.required) || (form.date.$dirty && form.date.$invalid)}">
+            <label for="date" class="control-label col-md-3 text-right text-capitalize">date</label>
+            <input type="text" name="date" class="form-control" ng-model="vm.new_calories.date" data-date-format="yyyy-MM-dd" bs-datepicker required />
+            <span ng-if="form.date.$dirty && form.date.$error.required" class="help-block col-md-offset-3">Date is required</span>
+            <span ng-if="form.date.$dirty && form.date.$invalid" class="help-block col-md-offset-3">Invalid type!</span>
           </div>
-					<div class="row" ng-class="{'has-error': form.time.$invalid}">
-						<label class="control-label col-md-3 text-right text-capitalize">time </label>
-						<input type="text" class="form-control col-md-3" size="8" ng-model="vm.new_calories.time" name="time" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" required />
+					<div class="row" ng-class="{ 'has-error': (form.time.$dirty && form.time.$error.required) || (form.time.$dirty && form.time.$invalid)}">
+						<label for="time" class="control-label col-md-3 text-right text-capitalize">time </label>
+						<input type="text" class="form-control" size="8" ng-model="vm.new_calories.time" name="time" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" required />
+						<span ng-if="form.time.$dirty && form.time.$error.required" class="help-block col-md-offset-3">Time is required</span>
+						<span ng-if="form.time.$dirty && form.time.$invalid" class="help-block col-md-offset-3">Invalid type!</span>
 					</div>
-					<div class="row" ng-class="{'has-error': form.meal.$invalid}">
-						<label class="control-label col-md-3 text-right text-capitalize">meal </label>
-						<input type="text" class="form-control col-md-3" size="8" ng-model="vm.new_calories.meal" name="meal" required />
+					<div class="row" ng-class="{ 'has-error': form.meal.$dirty && form.meal.$error.required }">
+						<label for="meal" class="control-label col-md-3 text-right text-capitalize">meal </label>
+						<input type="text" class="form-control" size="8" ng-model="vm.new_calories.meal" name="meal" required />
+						<span ng-show="form.meal.$dirty && form.meal.$error.required" class="help-block col-md-offset-3">Meal name is required</span>
 					</div>
-					<div class="row" ng-class="{'has-error': form.calories.$invalid}">
-						<label class="control-label col-md-3 text-right text-capitalize">calories </label>
-						<input type="number" class="form-control col-md-3" size="8" ng-model="vm.new_calories.calories" name="calories" min="0" required />
+					<div class="row" ng-class="{ 'has-error': (form.calories.$dirty && form.calories.$error.required) || (form.calories.$dirty && form.calories.$invalid)}">
+						<label for="calories" class="control-label col-md-3 text-right text-capitalize">calories </label>
+						<input type="number" class="form-control" size="8" ng-model="vm.new_calories.calories" name="calories" min="0" required />
+						<span ng-if="form.calories.$dirty && form.calories.$error.required" class="help-block col-md-offset-3">Calories is required</span>
+						<span ng-if="form.calories.$dirty && form.calories.$invalid" class="help-block col-md-offset-3">Invalid type!</span>
 					</div>
 				</form>
 			</div>

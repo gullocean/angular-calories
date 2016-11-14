@@ -13,6 +13,13 @@
     vm.login = login;
 
     (function initController() {
+      if (!!AuthenticationService.GetCredential('token')) {
+        RestAPI.Logout(function(response) {
+          if (!response.resultCode) {
+            FlashService.Success(response.message);
+          }
+        });
+      }
       AuthenticationService.ClearCredentials();
     })();
 

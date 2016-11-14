@@ -11,6 +11,7 @@
     var service = {};
 
     service.Login     = Login;
+    service.Logout    = Logout;
     service.Register  = Register;
     service.CreateUser = CreateUser;
     service.GetUsers  = GetUsers;
@@ -52,6 +53,20 @@
         url: API_URL + 'users/register',
         data: data,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      }).success(function(response) {
+        callback(response);
+      }).error(function(error) {
+        callback(error);
+      });
+    }
+    function Logout(callback) {
+      $http({
+        method: 'GET',
+        url: API_URL + 'logout',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': AuthenticationService.GetCredential('token')
+        }
       }).success(function(response) {
         callback(response);
       }).error(function(error) {

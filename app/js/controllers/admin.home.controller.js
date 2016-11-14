@@ -5,9 +5,9 @@
     .module('calories')
     .controller('AdminHomeController', AdminHomeController);
 
-  AdminHomeController.$inject = ['$location', '$rootScope', '$scope', 'AuthenticationService', 'RestAPI', '$http', 'NgTableParams', '$modal', 'ROLE', '$alert'];
+  AdminHomeController.$inject = ['$location', '$rootScope', '$scope', 'AuthenticationService', 'RestAPI', '$http', 'NgTableParams', '$modal', 'ROLE', '$alert', 'usSpinnerService'];
 
-  function AdminHomeController($location, $rootScope, $scope, AuthenticationService, RestAPI, $http, NgTableParams, $modal, ROLE, $alert) {
+  function AdminHomeController($location, $rootScope, $scope, AuthenticationService, RestAPI, $http, NgTableParams, $modal, ROLE, $alert, usSpinnerService) {
     var vm = this;
     vm.roles = [
       {
@@ -21,15 +21,18 @@
         label: "Regular User"
       }
     ];
+    vm.ROLE = ROLE;
     initController();
     function initController() {
       if (!AuthenticationService.CheckCredential()) $location.path('/login');
       vm.currentUser = AuthenticationService.GetCredential('currentUser');
+      vm.currentUser.role = +vm.currentUser.role;
+      
       RestAPI.GetUsers(function(response) {
         vm.users = response.users;
         vm.users.forEach(function(user) {
           user.id = +user.id;
-          user.setting = +user.setting;
+          user.setting = user.setting === null ? null : +user.setting;
         })
         vm.tableParams = new NgTableParams({}, { dataset: vm.users});
       });
@@ -62,28 +65,23 @@
       modalObj.$promise.then(modalObj.show);
     }
     $scope.onCreateUser = function(user_data) {
-      var data = {
-        username: user_data.username,
-        password: user_data.password,
-        setting: user_data.setting,
-        role: ROLE.REGULAR_USER
-      };
+      var data = angular.copy(user_data);
+      if (data.hasOwnProperty('confirmPassword')) delete data.confirmPassword;
+      usSpinnerService.spin('spinner');
       RestAPI.CreateUser(data, function(response) {
         SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
-        var new_user = response.currentUser;
-        vm.users.unshift(new_user);
-        new_user = {};
-        vm.tableParams.reload();
+        if (!response.resultCode) {
+          var new_user = response.currentUser;
+          vm.users.unshift(new_user);
+          vm.tableParams.reload();
+        }
+        usSpinnerService.stop('spinner');
       });
     }
     $scope.onEditUser = function(user_data) {
-      var data = {
-        id: user_data.id,
-        username: user_data.username,
-        password: user_data.password,
-        setting: user_data.setting,
-        role: user_data.role
-      };
+      var data = angular.copy(user_data);
+      if (data.hasOwnProperty('confirmPassword')) delete data.confirmPassword;
+      usSpinnerService.spin('spinner');
       RestAPI.UpdateUser(data, function(response) {
         SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
         if (!response.resultCode) {
@@ -98,9 +96,11 @@
           })
           vm.tableParams.reload();
         }
+        usSpinnerService.stop('spinner');
       });
     }
     $scope.onDeleteUser = function(user_data) {
+      usSpinnerService.spin('spinner');
       RestAPI.DeleteUser(user_data.id, function(response) {
         SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
         if (!response.resultCode) {
@@ -108,6 +108,7 @@
           vm.users.splice(index, 1);
           vm.tableParams.reload();
         }
+        usSpinnerService.stop('spinner');
       });
     }
     $scope.onView = function(user_data) {
