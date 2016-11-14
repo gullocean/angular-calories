@@ -5,9 +5,9 @@
     .module('calories')
     .controller('AdminHomeController', AdminHomeController);
 
-  AdminHomeController.$inject = ['$location', '$rootScope', '$scope', 'AuthenticationService', 'RestAPI', '$http', 'NgTableParams', '$modal', 'ROLE', '$alert', 'usSpinnerService'];
+  AdminHomeController.$inject = ['$location', '$scope', 'AuthenticationService', 'RestAPI', 'NgTableParams', '$modal', 'ROLE', '$alert', 'usSpinnerService'];
 
-  function AdminHomeController($location, $rootScope, $scope, AuthenticationService, RestAPI, $http, NgTableParams, $modal, ROLE, $alert, usSpinnerService) {
+  function AdminHomeController($location, $scope, AuthenticationService, RestAPI, NgTableParams, $modal, ROLE, $alert, usSpinnerService) {
     var vm = this;
     vm.roles = [
       {
@@ -42,7 +42,8 @@
       modalContent = {
         scope: $scope,
         templateUrl: 'public/views/',
-        show: false
+        show: false,
+        backdrop: false
       };
       switch(data.cmd) {
         case 'create':

@@ -5,9 +5,9 @@
     .module('calories')
     .controller('LoginController', LoginController);
 
-  LoginController.$inject = ['$rootScope', '$location', 'AuthenticationService', 'FlashService', 'ROLE', 'RestAPI'];
+  LoginController.$inject = ['$location', 'AuthenticationService', 'FlashService', 'ROLE', 'RestAPI'];
 
-  function LoginController($rootScope, $location, AuthenticationService, FlashService, ROLE, RestAPI) {
+  function LoginController($location, AuthenticationService, FlashService, ROLE, RestAPI) {
     var vm = this;
 
     vm.login = login;

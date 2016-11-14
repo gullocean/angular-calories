@@ -5,9 +5,9 @@
     .module('calories')
     .controller('RegisterController', RegisterController);
 
-  RegisterController.$inject = ['$location', '$rootScope', 'FlashService', 'RestAPI', 'AuthenticationService', 'ROLE'];
+  RegisterController.$inject = ['$location', 'FlashService', 'RestAPI', 'AuthenticationService', 'ROLE'];
 
-  function RegisterController($location, $rootScope, FlashService, RestAPI, AuthenticationService, ROLE) {
+  function RegisterController($location, FlashService, RestAPI, AuthenticationService, ROLE) {
     var vm = this;
 
     vm.register = register;

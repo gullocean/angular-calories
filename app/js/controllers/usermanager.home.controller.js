@@ -5,9 +5,9 @@
     .module('calories')
     .controller('UserManagerHomeController', UserManagerHomeController);
 
-  UserManagerHomeController.$inject = ['$location', '$rootScope', '$scope', '$http', 'NgTableParams', '$modal', 'API_URL', '$alert', 'md5', 'ROLE', 'RestAPI', 'AuthenticationService', 'usSpinnerService'];
+  UserManagerHomeController.$inject = ['$location', '$scope', 'NgTableParams', '$modal', 'API_URL', '$alert', 'ROLE', 'RestAPI', 'AuthenticationService', 'usSpinnerService'];
 
-  function UserManagerHomeController($location, $rootScope, $scope, $http, NgTableParams, $modal, API_URL, $alert, md5, ROLE, RestAPI, AuthenticationService, usSpinnerService) {
+  function UserManagerHomeController($location, $scope, NgTableParams, $modal, API_URL, $alert, ROLE, RestAPI, AuthenticationService, usSpinnerService) {
     var vm = this;
     initController();
     function initController() {
@@ -29,7 +29,8 @@
       modalContent = {
         scope: $scope,
         templateUrl: 'public/views/',
-        show: false
+        show: false,
+        backdrop: false
       };
       switch(data.cmd) {
         case 'create':

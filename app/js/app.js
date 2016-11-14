@@ -8,7 +8,6 @@
       'ngPassword',
       'daterangepicker',
       'ngTable',
-      'angular-md5',
       'ui.bootstrap',
       'ngAnimate',
       'ngSanitize',
@@ -17,7 +16,6 @@
       'angularSpinner'
     ])
     .config(config)
-    .run(run)
     .constant('ROLE', {
       ADMIN: 0,
       USER_MANAGER: 1,
@@ -85,9 +83,9 @@
       };
     });
 
-  config.$inject = ['$routeProvider', '$locationProvider', '$momentProvider', '$httpProvider', '$modalProvider'];
+  config.$inject = ['$routeProvider', '$momentProvider', '$modalProvider'];
 
-  function config($routeProvider, $locationProvider, $momentProvider, $httpProvider, $modalProvider) {
+  function config($routeProvider, $momentProvider, $modalProvider) {
     $routeProvider
       .when('/admin-home', {
         controller: 'AdminHomeController',
@@ -126,23 +124,5 @@
       .extend($modalProvider.defaults, {
         html: true
       });
-  }
-
-  run.$inject = ['$rootScope', '$location', '$cookieStore', '$http'];
-
-  function run($rootScope, $location, $cookieStore, $http) {
-    // keep user logged in after page refresh
-    $rootScope.currentUser = $cookieStore.get('currentUser') || {};
-    if ($rootScope.currentUser) {
-      $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.currentUser.authdata; // jshint ignore:line
-    }
-    $rootScope.$on('$locationChangeStart', function(event, next, current) {
-      // redirect to login page if not logged in and trying to access a restricted page
-      var restrictedPage = $.inArray($location.path(), ['/login', '/register']) === -1;
-      var loggedIn = $rootScope.currentUser;
-      if (restrictedPage && !loggedIn) {
-          $location.path('/login');
-      }
-    });
   }
 })();

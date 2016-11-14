@@ -5,9 +5,9 @@
     .module('calories')
     .controller('RegularUserHomeController', RegularUserHomeController);
 
-  RegularUserHomeController.$inject = ['$location', '$rootScope', '$scope', 'AuthenticationService', 'RestAPI', 'NgTableParams', '$cookieStore', '$moment', '$modal', '$alert', 'DATE_FORMAT', 'TIME_FORMAT', 'ROLE', 'usSpinnerService'];
+  RegularUserHomeController.$inject = ['$location', '$scope', 'AuthenticationService', 'RestAPI', 'NgTableParams', '$cookieStore', '$moment', '$modal', '$alert', 'DATE_FORMAT', 'TIME_FORMAT', 'ROLE', 'usSpinnerService'];
 
-  function RegularUserHomeController($location, $rootScope, $scope, AuthenticationService, RestAPI, NgTableParams, $cookieStore, $moment, $modal, $alert, DATE_FORMAT, TIME_FORMAT, ROLE, usSpinnerService) {
+  function RegularUserHomeController($location, $scope, AuthenticationService, RestAPI, NgTableParams, $cookieStore, $moment, $modal, $alert, DATE_FORMAT, TIME_FORMAT, ROLE, usSpinnerService) {
     var vm = this;
     vm.currentUser = {};
     vm.calories = [];
@@ -60,11 +60,13 @@
       modalContent = {
         scope: $scope,
         templateUrl: 'public/views/',
-        show: false
+        show: false,
+        backdrop: false,
+        dateFormat: 'dd/MM/yyyy'
       };
       switch(data.cmd) {
         case 'create':
-          modalContent.title = 'Add a new meal';
+          modalContent.title = 'Add new calories';
           modalContent.templateUrl += 'addmeal.modal.html';
           break;
         case 'delete':
@@ -73,7 +75,7 @@
           vm.selected_calories = data.calories;
           break;
         case 'edit':
-          modalContent.title = 'Edit a meal';
+          modalContent.title = 'Edit calories';
           modalContent.templateUrl += 'editmeal.modal.html';
           vm.selected_calories = data.calories;
           vm.edit_calories = angular.copy(vm.selected_calories);

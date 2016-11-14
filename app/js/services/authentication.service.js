@@ -5,9 +5,9 @@
     .module('calories')
     .factory('AuthenticationService', AuthenticationService);
 
-  AuthenticationService.$inject = ['$http', '$cookieStore', '$rootScope', '$timeout', 'md5', 'API_URL'];
+  AuthenticationService.$inject = ['$http', '$cookieStore', '$timeout', 'API_URL'];
 
-  function AuthenticationService($http, $cookieStore, $rootScope, $timeout, md5, API_URL) {
+  function AuthenticationService($http, $cookieStore, $timeout, API_URL) {
     var service = {};
 
     service.SetCredentials    = SetCredentials;

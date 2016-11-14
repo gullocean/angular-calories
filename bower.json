@@ -13,7 +13,6 @@
     "tests"
   ],
   "dependencies": {
-    "angular-md5": "^0.1.10",
     "angular-bootstrap": "^2.2.0",
     "angular-strap": "^2.3.10",
     "angular-momentjs": "^0.2.2",
