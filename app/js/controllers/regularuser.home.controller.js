@@ -66,7 +66,7 @@
       };
       switch(data.cmd) {
         case 'create':
-          modalContent.title = 'Add new calories';
+          modalContent.title = 'Add New Calories';
           modalContent.templateUrl += 'addmeal.modal.html';
           break;
         case 'delete':
@@ -75,7 +75,7 @@
           vm.selected_calories = data.calories;
           break;
         case 'edit':
-          modalContent.title = 'Edit calories';
+          modalContent.title = 'Edit Calories';
           modalContent.templateUrl += 'editmeal.modal.html';
           vm.selected_calories = data.calories;
           vm.edit_calories = angular.copy(vm.selected_calories);

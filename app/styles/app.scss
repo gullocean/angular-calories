@@ -152,6 +152,11 @@ label {
     -webkit-transition: background-color 0.2s linear;
     -moz-transition: background-color 0.2s linear;
     transition: background-color 0.2s linear;
+
+    &:focus, &:active, &:active:focus {
+        outline-width: 0;
+        outline-color: transparent;
+    }
 }
 
 .navbar a {
@@ -167,4 +172,8 @@ label {
 .datepicker .btn,
 .timepicker .btn {
     border: none;
+}
+
+.form-actions img {
+    margin-left: 4px;
 }

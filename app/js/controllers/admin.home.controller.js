@@ -47,7 +47,7 @@
       };
       switch(data.cmd) {
         case 'create':
-          modalContent.title = 'Add a new user';
+          modalContent.title = 'Add User';
           modalContent.templateUrl += 'adduser.modal.html';
           break;
         case 'delete':
@@ -57,7 +57,7 @@
           vm.selected_user = data.user;
           break;
         case 'edit':
-          modalContent.title = 'Edit a user';
+          modalContent.title = 'Edit User';
           modalContent.templateUrl += 'edituser.modal.html';
           vm.selected_user = data.user;
           vm.edit_user = angular.copy(vm.selected_user);
