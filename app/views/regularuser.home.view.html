@@ -30,7 +30,7 @@
 			</div>
 			<div class="col-md-3">
 				<button class="btn btn-primary text-capitalize" ng-disabled="form.$invalid || vm.dataLoading" ng-click="onUpdateSetting();vm.flagEdit=!vm.flagEdit;">{{vm.flagEdit ? "update" : "edit"}}</button>
-				<button ng-if="vm.flagEdit" class="btn btn-primary text-capitalize" ng-click="onCancelSetting();">cancel</button>
+				<button ng-if="vm.flagEdit" class="btn btn-default text-capitalize" ng-click="onCancelSetting();">cancel</button>
 			</div>
 		</div>
 		<div class="row">
@@ -55,7 +55,7 @@
 				</div>
 			</div>
 			<div class="col-md-3">
-				<button type="button" class="btn btn-primary" data-animation="am-fade-and-slide-top" ng-click="showModal({cmd:'create'})">Add calories</button>
+				<button type="button" class="btn btn-primary" data-animation="am-fade-and-slide-top" ng-click="showModal({cmd:'create'})">Add Calories</button>
 			</div>
 		</div>
 		<div class="row">
