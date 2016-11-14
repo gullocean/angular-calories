@@ -1,0 +1,48 @@
+<div class="modal ng-scope top am-fade-and-slide-top" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header" ng-show="title">
+				<button type="button" class="close" ng-click="$hide()">×</button>
+				<h4 class="modal-title ng-binding" ng-bind-html="title">Title</h4>
+			</div>
+			<div class="modal-body">
+				<div ng-class="{ 'alert': flash, 'alert-success': flash.type === 'success', 'alert-danger': flash.type === 'error' }" ng-if="flash" ng-bind="flash.message"></div>
+				<form name="form" class="form-inline" role="form">
+					<div class="row" ng-class="{ 'has-error': form.username.$dirty && form.username.$error.required }">
+            <label for="name" class="col-md-4 text-right text-capitalize">name</label>
+            <input type="text" name="name" id="name" class="form-control" ng-model="vm.new_user.username" required />
+            <span ng-show="form.username.$dirty && form.username.$error.required" class="help-block col-md-offset-4">User name is required</span>
+          </div>
+          <div class="row" ng-class="{ 'has-error': form.setting.$dirty && form.setting.$error.required }">
+            <label for="setting" class="col-md-4 text-right text-capitalize">setting</label>
+            <input type="number" name="setting" id="setting" class="form-control" min="0" ng-model="vm.new_user.setting" required />
+            <span ng-show="form.setting.$dirty && form.setting.$error.required" class="help-block col-md-offset-4">User setting is required</span>
+          </div>
+          <div ng-if="vm.currentUser.role==0" class="row" ng-class="{ 'has-error': form.setting.$dirty && form.setting.$error.required }">
+            <label for="role" class="col-md-4 text-right text-capitalize">role</label>
+            <button type="button" name="role" class="form-control" ng-model="vm.new_user.role" data-html="1" data-toggle="true" data-placeholder="Choose one..." bs-options="role.value as role.label for role in vm.roles" bs-select required >
+              <span class="caret"></span>
+            </button>
+            <span ng-show="form.role.$dirty && form.role.$error.required" class="help-block col-md-offset-4">User role is required</span>
+          </div>
+					<div class="row" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
+            <label for="password" class="col-md-4 text-right text-capitalize">password</label>
+            <input type="password" name="password" id="password" class="form-control" ng-model="vm.new_user.password" required />
+            <span ng-show="form.password.$dirty && form.password.$error.required" class="help-block col-md-offset-4">Password is required</span>
+          </div>
+          <div class="row" ng-class="{ 'has-error': (form.confirmPassword.$dirty && form.confirmPassword.$error.required) || (form.confirmPassword.$dirty && form.confirmPassword.$invalid)}">
+            <label for="confirmPassword" class="col-md-4 text-right text-capitalize">confirm password</label>
+            <input type="password" match-password="password" name="confirmPassword" id="confirmPassword" class="form-control" ng-model="vm.new_user.confirmPassword" required />
+            <span ng-if="form.confirmPassword.$dirty && form.confirmPassword.$error.required" class="help-block col-md-offset-4">Confirm password is required!</span>
+            <span ng-if="form.confirmPassword.$dirty && form.confirmPassword.$invalid" class="help-block col-md-offset-4">Password is not matched!</span>
+          </div>
+				</form>
+			</div>
+			<div class="modal-footer form-actions">
+        <button type="button" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary text-capitalize" ng-click="onCreateUser(vm.new_user);$hide();">submit</button>
+        <img ng-if="vm.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+        <button type="button" class="btn btn-link text-capitalize" ng-click="$hide()">cancel</button>
+      </div>
+		</div>
+	</div>
+</div>

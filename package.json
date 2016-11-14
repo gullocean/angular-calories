@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "angular": "1.5.x",
     "angular-animate": "1.5.x",
     "angular-cookies": "1.5.x",
     "angular-daterangepicker": "^0.2.3-alpha1",
@@ -19,9 +18,7 @@
     "angular-resource": "1.5.x",
     "angular-route": "1.5.x",
     "angular-sanitize": "^1.5.8",
-    "bootstrap": "3.3.x",
     "font-awesome": "^4.7.0",
-    "jquery": "2.2.x",
     "ng-table": "^2.1.0"
   },
   "devDependencies": {

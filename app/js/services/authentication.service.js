@@ -10,39 +10,27 @@
   function AuthenticationService($http, $cookieStore, $rootScope, $timeout, md5, API_URL) {
     var service = {};
 
-    service.Login = Login;
-    service.SetCredentials = SetCredentials;
-    service.ClearCredentials = ClearCredentials;
+    service.SetCredentials    = SetCredentials;
+    service.ClearCredentials  = ClearCredentials;
+    service.GetCredential     = GetCredential;
+    service.CheckCredential   = CheckCredential;
 
     return service;
 
-    function Login(username, password, callback) {
-      var data = JSON.stringify({
-        username: username,
-        password: md5.createHash(password || ''),
-        cmd     : 'authenticate'
-      });
-      $http({
-        method: 'POST',
-        url: API_URL,
-        data: data
-      }).success(function(response) {
-        callback(response);
-      }).error(function(error) {
-        callback(error);
-      });
+    function SetCredentials(field, value) {
+      $cookieStore.put(field, value);
     }
-
-    function SetCredentials(data) {
-      $rootScope.globals = data;
-
-      $cookieStore.put('globals', $rootScope.globals);
-    }
-
     function ClearCredentials() {
-      $rootScope.globals = {};
-      $cookieStore.remove('globals');
+      $cookieStore.remove('currentUser');
+      $cookieStore.remove('token');
       $http.defaults.headers.common.Authorization = 'Basic';
+    }
+    function GetCredential(field) {
+      return $cookieStore.get(field);
+    }
+    function CheckCredential() {
+      var token = GetCredential('token');
+      return !(angular.isUndefined(token) || token === null);
     }
   }
 })();

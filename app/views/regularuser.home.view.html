@@ -1,79 +1,85 @@
 <nav class="navbar navbar-default">
 	<div class="container col-md-4">
 		<div class="navbar-header">
-			<a class="navbar-brand" href="#/login">Logout</a>
+			<a class="navbar-brand text-capitalize" href="#/login">logout</a>
 		</div>
+	</div>
+	<div ng-if="vm.isAdmin" class="pull-right">
+		<a class="navbar-brand text-capitalize" href="#/admin-home">« back</a>
 	</div>
 	<div class="col-md-4" id="alerts-container"></div>
 </nav>
 <div class="container-fluid">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="row">
-				<div class="col-md-4">
-					<div class="form-group row">
-						<label for="userName" class="text-capitalize col-md-4 text-right">user name</label>
-						<input disabled type="text" name="userName" value="{{currentUser.username}}" class="form-control col-md-8">
+	<form name="form" ng-init="vm.flagEdit=false">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="form-group row">
+					<label for="userName" class="text-capitalize text-right col-md-4 control-label">user name</label>
+					<div class="col-md-8">
+						<input disabled type="text" name="userName" value="{{vm.currentUser.username}}" class="form-control col-md-8">
 					</div>
 				</div>
-				<div class="col-md-6">
-					<div class="form-group" ng-init="flagEdit=false">
-						<label for="userSetting" class="text-capitalize col-md-2 text-right">setting</label>
-						<input ng-disabled="!flagEdit" type="number" name="userSetting" id="userSetting" ng-model="currentUser.setting" class="form-control col-md-8">
-						<button class="btn btn-primary text-capitalize" ng-click="onUpdateSetting();flagEdit=!flagEdit;">{{flagEdit ? "update" : "edit"}}</button>
-						<button ng-if="flagEdit" class="btn btn-primary text-capitalize" ng-click="onCancelSetting();">cancel</button>
+			</div>
+			<div class="col-md-5">
+				<div class="form-group row">
+					<label for="setting" class="text-capitalize col-md-4 text-right control-label">setting</label>
+					<div class="col-md-8">
+						<input ng-disabled="!vm.flagEdit" type="number" name="setting" id="setting" ng-model="vm.currentUser.setting" class="form-control col-md-6" required />
 					</div>
 				</div>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary text-capitalize" ng-disabled="form.$invalid || vm.dataLoading" ng-click="onUpdateSetting();vm.flagEdit=!vm.flagEdit;">{{vm.flagEdit ? "update" : "edit"}}</button>
+				<button ng-if="vm.flagEdit" class="btn btn-primary text-capitalize" ng-click="onCancelSetting();">cancel</button>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<div class="row">
-				<div class="col-md-4">
-					<div class="form-group row">
-						<label for="date" class="text-capitalize col-md-4 text-right">date</label>
-						<input date-range-picker type="text" class="form-control date-picker col-md-8" name="date"  ng-model="filterData.date">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="form-group row">
+					<label for="date" class="text-capitalize col-md-4 text-right control-label">date</label>
+					<div class="col-md-8">
+						<input date-range-picker type="text" class="form-control date-picker col-md-8" name="date" ng-model="vm.filterData.date" >
 					</div>
 				</div>
-				<div class="col-md-4">
-					<label for="time" class="text-capitalize col-md-4 text-right">time</label>
-					<div class="input-group col-md-8">
-						<form name="timepickerForm" class="form-inline" role="form">
-							<div class="row">
-								<div class="form-group col-md-5" ng-class="{'has-error': timepickerForm.startTime.$invalid}">
-			            <input type="text" class="form-control" size="8" ng-model="filterData.time.startTime" name="startTime" bs-timepicker
-			            data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" data-min-time="05:00" data-maxTime="filterData.time.endTime">
-		            </div>
-		            <div class="input-group-addon col-md-2">to</div>
-		            <div class="form-group col-md-5" ng-class="{'has-error': timepickerForm.endTime.$invalid}">
-			            <input type="text" class="form-control" size="8" ng-model="filterData.time.endTime" name="endTime" bs-timepicker
-			            data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" data-min-time="05:00" data-maxTime="filterData.time.startTime">
-		            </div>
-							</div>
-            </form>
-          </div>
-				</div>
-				<div class="col-md-2">
-					<button type="button" class="btn btn-primary text-capitalize" data-animation="am-fade-and-slide-top" ng-click="showModal()">add</button>
+			</div>
+			<div class="col-md-5">
+				<div class="form-group row">
+					<label for="startTime" class="text-capitalize col-md-4 text-right control-label">time</label>
+					<div class="col-md-3">
+						<input type="text" class="form-control" size="8" ng-model="vm.filterData.time.startTime" name="startTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" data-maxTime="vm.filterData.time.endTime">
+					</div>
+					<label for="startTime" class="text-capitalize col-md-1 control-label">to</label>
+					<div class="col-md-3">
+						<input type="text" class="form-control" size="8" ng-model="vm.filterData.time.endTime" name="endTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker" data-min-time="vm.filterData.time.startTime">	
+					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-12">
-					<table ng-table="vm.tableParams" class="table" show-filter="false">
-						<tr ng-repeat="meal in $data | rangeDate:filterData">
-							<td title="'date'" filter="{ date: 'text'}" sortable="'date'">{{meal.date}}</td>
-							<td title="'time'" filter="{ time: 'text'}" sortable="'time'">{{meal.time}}</td>
-							<td title="'meal'" filter="{ time: 'text'}" sortable="'meal'">{{meal.meal}}</td>
-							<td title="'calories'" filter="{ time: 'text'}" sortable="'calories'">{{meal.calories}}</td>
-							<td title="'edit'">
-								<button class="btn btn-primary text-capitalize" ng-click="onEditMeal(meal.id);">edit</button>
-								<button class="btn btn-primary text-capitalize" ng-click="onDeleteMeal(meal.id);">delete</button>
-							</td>
-						</tr>
-					</table>
-				</div>
+			<div class="col-md-3">
+				<button type="button" class="btn btn-primary text-capitalize" data-animation="am-fade-and-slide-top" ng-click="showModal({cmd:'create'})">add</button>
 			</div>
 		</div>
-	</div>
+		<div class="row">
+			<div class="col-md-12">
+				<table ng-table="vm.tableParams" class="table" show-filter="false">
+					<colgroup>
+						<col width="20%" />
+						<col width="20%" />
+						<col width="20%" />
+						<col width="20%" />
+						<col width="20%" />
+					</colgroup>
+					<tr ng-repeat="(key, meal) in $data | rangeDate:vm.filterData" style="color:{{meal.color}}">
+						<td title="'date'" filter="{ date: 'text'}" sortable="'date'">{{meal.date}}</td>
+						<td title="'time'" filter="{ time: 'text'}" sortable="'time'">{{meal.time}}</td>
+						<td title="'meal'" filter="{ meal: 'text'}" sortable="'meal'">{{meal.meal}}</td>
+						<td title="'calories'" filter="{ calories: 'number'}" sortable="'calories'">{{meal.calories}}</td>
+						<td title="'edit'">
+							<button class="btn btn-primary text-capitalize" ng-click="showModal({cmd:'edit', calories:meal});">edit</button>
+							<button class="btn btn-primary text-capitalize" ng-click="showModal({cmd:'delete', calories:meal});">delete</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</form>
 </div>

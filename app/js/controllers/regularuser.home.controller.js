@@ -5,181 +5,189 @@
     .module('calories')
     .controller('RegularUserHomeController', RegularUserHomeController);
 
-  RegularUserHomeController.$inject = ['$rootScope', '$scope', '$http', 'NgTableParams', '$cookieStore', '$moment', '$modal', 'API_URL', '$alert', 'DATE_FORMAT', 'TIME_FORMAT'];
+  RegularUserHomeController.$inject = ['$location', '$rootScope', '$scope', 'AuthenticationService', 'RestAPI', 'NgTableParams', '$cookieStore', '$moment', '$modal', '$alert', 'DATE_FORMAT', 'TIME_FORMAT', 'ROLE', 'usSpinnerService'];
 
-  function RegularUserHomeController($rootScope, $scope, $http, NgTableParams, $cookieStore, $moment, $modal, API_URL, $alert, DATE_FORMAT, TIME_FORMAT) {
-    var self = this;
-    // Pre-fetch an external template populated with a custom scope
-    $scope.new_calories = {id: null, date: null, time: null, meal: null, calories: null, user_id: null};
-    var modalCreateMeal = $modal({
-      scope: $scope,
-      title: "Add a new meal",
-      templateUrl: 'public/views/addmeal.modal.html',
-      show: false
-    });
-    var modalDeleteMeal = $modal({
-      title: "Notification!",
-      content: "Would you delete this meal?",
-      show: false
-    });
-    // Show when some event occurs (use $promise property to ensure the template has been loaded)
-    $scope.showModal = function() {
-      modalCreateMeal.$promise.then(modalCreateMeal.show);
+  function RegularUserHomeController($location, $rootScope, $scope, AuthenticationService, RestAPI, NgTableParams, $cookieStore, $moment, $modal, $alert, DATE_FORMAT, TIME_FORMAT, ROLE, usSpinnerService) {
+    var vm = this;
+    vm.currentUser = {};
+    vm.calories = [];
+    vm.isAdmin = false;
+    vm.new_calories = {id: null, date: null, time: null, meal: null, calories: null, user_id: null};
+    vm.selected_calories = null;
+    vm.edit_calories = null;
+    vm.filterData = {
+      date: {
+        startDate: null,
+        endDate: null
+      },
+      time: {
+        startTime: null,
+        endTime: null
+      }
+    };
+    vm.user_id = -1;
+    initController();
+    function initController() {
+      
+      if (!AuthenticationService.CheckCredential()) $location.path('/login');
+      vm.currentUser = AuthenticationService.GetCredential('currentUser');
+      var params = $location.search();
+      params.id = +params.id;
+      params.setting = +params.setting;
+      params.role = +params.role;
+      vm.isAdmin = (vm.currentUser.role === ROLE.ADMIN);
+      vm.user_id = vm.isAdmin ? params.id : vm.currentUser.id;
+      if (vm.isAdmin) vm.currentUser = params;
+      RestAPI.GetUserCalories(vm.user_id, function(response) {
+        if (!response.hasOwnProperty('calories') || response.calories === null) {
+          console.log("http response error! There is no calories!");
+        } else {
+          vm.calories = response.calories;
+          vm.calories.forEach(function(d) {
+            d.calories = +d.calories;
+            d.id = +d.id;
+            d.user_id = +d.user_id;
+            d.time = $moment(d.time, TIME_FORMAT).format(TIME_FORMAT);
+          });
+          vm.tableParams = new NgTableParams({}, { dataset: vm.calories});
+          CheckSetting();
+        }
+      });
+    }
+    $scope.showModal = function(data) {
+      var modalObj, modalContent;
+      modalContent = {
+        scope: $scope,
+        templateUrl: 'public/views/',
+        show: false
+      };
+      switch(data.cmd) {
+        case 'create':
+          modalContent.title = 'Add a new meal';
+          modalContent.templateUrl += 'addmeal.modal.html';
+          break;
+        case 'delete':
+          modalContent.title = 'Notification!';
+          modalContent.templateUrl += 'deletemeal.modal.html';
+          vm.selected_calories = data.calories;
+          break;
+        case 'edit':
+          modalContent.title = 'Edit a meal';
+          modalContent.templateUrl += 'editmeal.modal.html';
+          vm.selected_calories = data.calories;
+          vm.edit_calories = angular.copy(vm.selected_calories);
+          vm.edit_calories.time = $moment(vm.edit_calories.time, TIME_FORMAT).toDate();
+      }
+      modalObj = $modal(modalContent);
+      modalObj.$promise.then(modalObj.show);
     };
     $scope.onUpdateSetting = function() {
-      if ($scope.flagEdit) {
-        var data = JSON.stringify({
-          user_id: $rootScope.globals.currentUser.id,
-          setting: $scope.currentUser.setting,
-          cmd    : 'update_user'
-        });
-        $http({
-          method: 'POST',
-          url: API_URL,
-          data: data
-        }).success(function(response) {
-          if (angular.isUndefined(response.resultCode) || response.resultCode === null) console.log("server error!");
-          if (response.resultCode) {
-            var alert = $alert({
-              title: 'Hello!',
-              content: 'Updated your setting!',
-              container: '#alerts-container',
-              type:'success',
-              placement: 'top',
-              show: true,
-              duration: 1,
-              animation: 'am-fade-and-slide-top'
-            });
+      if (vm.flagEdit) {
+        usSpinnerService.spin('spinner');
+        var user_data = { id : vm.currentUser.id, setting: vm.currentUser.setting };
+        RestAPI.UpdateUser(user_data, function(response) {
+          SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
+          if (!response.resultCode) {
+            vm.currentUser.setting = +response.currentUser.setting;
+            CheckSetting();
+            $cookieStore.put('currentUser', vm.currentUser);
+            usSpinnerService.stop('spinner');
           } else {
-            var alert = $alert({
-              type:'danger',
-              title: 'Hello!',
-              content: 'failed updating user setting!',
-              container: '#alerts-container',
-              placement: 'top',
-              show: true,
-              duration: 1,
-              animation: 'am-fade-and-slide-top'
-            });
-            $scope.currentUser.setting = $scope.oldSetting;
+            vm.oldSetting = vm.currentUser.setting;
+            usSpinnerService.stop('spinner');
           }
-        }).error(function(error) {
-          var alert = $alert({
-            type:'danger',
-            title: 'Hello!',
-            content: 'failed updating user setting!',
-            container: '#alerts-container',
-            placement: 'top',
-            show: true,
-            duration: 1,
-            animation: 'am-fade-and-slide-top'
-          });
-          $scope.currentUser.setting = $scope.oldSetting;
+        }, function(error) {
+          console.log('error', error);
         });
       } else {
-        $scope.oldSetting = $scope.currentUser.setting;
+        vm.oldSetting = vm.currentUser.setting;
       }
     }
     $scope.onCancelSetting = function() {
-      $scope.flagEdit = false;
-      $scope.currentUser.setting = $scope.oldSetting;
+      vm.flagEdit = false;
+      vm.currentUser.setting = vm.oldSetting;
     }
-    $scope.onEditMeal = function(id) {
-      console.log("edit : " + id);
-    }
-    $scope.onDeleteMeal = function(id) {
-      modalDeleteMeal.$promise.then(modalDeleteMeal.show);
-    }
-    $scope.onCreateMeal = function() {
-      $scope.new_calories.user_id = $rootScope.globals.currentUser.id;
-      var data = JSON.stringify({
-        user_id : $scope.new_calories.user_id,
-        date: $moment($scope.new_calories.date).format(DATE_FORMAT),
-        time: $moment($scope.new_calories.time).format(TIME_FORMAT),
-        meal: $scope.new_calories.meal,
-        calories: $scope.new_calories.calories,
-        cmd   : 'add_calories'
-      });
-      $http({
-        method: 'POST',
-        url: API_URL,
-        data: data
-      }).success(function(response) {
-        if (angular.isUndefined(response.resultCode) || response.resultCode === null) {
-          var alert = $alert({
-            title: 'Hello!',
-            content: 'server error!',
-            container: '#alerts-container',
-            type:'danger',
-            placement: 'top',
-            show: true,
-            duration: 1,
-            animation: 'am-fade-and-slide-top'
+    $scope.onEditMeal = function(calories) {
+      calories.date = $moment(calories.date).format(DATE_FORMAT);
+      calories.time = $moment(calories.time, TIME_FORMAT).format(TIME_FORMAT);
+      usSpinnerService.spin('spinner');
+      RestAPI.UpdateCalories(calories, function(response) {
+        SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
+        if (!response.resultCode) {
+          response.calories.time = $moment(response.calories.time, TIME_FORMAT).format(TIME_FORMAT);
+          var keys = Object.keys(response.calories);
+          keys.forEach(function(key) {
+            vm.selected_calories[key] = response.calories[key];
           });
+          vm.tableParams.reload();
+          CheckSetting();
+          usSpinnerService.stop('spinner');
         } else {
-          if (response.resultCode) {
-            var alert = $alert({
-              title: 'Hello!',
-              content: 'Created a new meal(' + $scope.new_calories.meal + ')!',
-              container: '#alerts-container',
-              type:'success',
-              placement: 'top',
-              show: true,
-              duration: 1,
-              animation: 'am-fade-and-slide-top'
-            });
-            $scope.new_calories.id = response.calories_id;
-            $scope.new_calories.date = $moment($scope.new_calories.date).format(DATE_FORMAT);
-            $scope.new_calories.time = $moment($scope.new_calories.time).format(TIME_FORMAT);
-            $rootScope.globals.caloriesList.unshift($scope.new_calories);
-            $cookieStore.put('globals', $rootScope.globals);
-            self.tableParams = new NgTableParams({}, { dataset: $rootScope.globals.caloriesList});
-            $scope.new_calories = {id: null, date: null, time: null, meal: null, calories: null, user_id: null};
-          } else {
-            var alert = $alert({
-              type:'danger',
-              title: 'Hello!',
-              content: 'failed creating a new meal!',
-              container: '#alerts-container',
-              placement: 'top',
-              show: true,
-              duration: 1,
-              animation: 'am-fade-and-slide-top'
-            });
-          }
+          usSpinnerService.stop('spinner');
         }
-      }).error(function(error) {
-        var alert = $alert({
-          type:'danger',
-          title: 'Hello!',
-          content: 'failed creating a new meal!',
-          container: '#alerts-container',
-          placement: 'top',
-          show: true,
-          duration: 1,
-          animation: 'am-fade-and-slide-top'
-        });
       });
     }
-    function initController() {
-      $scope.filterData = {
-        date: {
-          startDate: null,
-          endDate: null
-        },
-        time: {
-          startTime: null,
-          endTime: null
+    $scope.onDeleteCalories = function(calories) {
+      RestAPI.DeleteCalories(calories.id, function(response) {
+        SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
+        if (!response.resultCode) {
+          vm.calories.splice(vm.calories.indexOf(vm.selected_calories), 1);
+          vm.tableParams.reload();
+          CheckSetting();
         }
-      };
-      $scope.currentUser = $rootScope.globals.currentUser;
-      $scope.oldSetting = $scope.currentUser.setting;
-      var caloriesList = $rootScope.globals.caloriesList;
-      self.tableParams = new NgTableParams({}, { dataset: caloriesList});
+      });
     }
-
-    initController();
-
-    
+    $scope.onCreateMeal = function(calories) {
+      calories.date = $moment(calories.date).format(DATE_FORMAT);
+      calories.time = $moment(calories.time, TIME_FORMAT).format(TIME_FORMAT);
+      calories.user_id = vm.currentUser.id;
+      vm.new_calories = {id: null, date: null, time: null, meal: null, calories: null, user_id: null};
+      RestAPI.CreateCalories(calories, function(response) {
+        SetAlert(response.resultCode === 0 ? 'success' : 'danger', response.message);
+        if (!response.resultCode) {
+          var temp;
+          response.calories.time = $moment(response.calories.TIME_FORMAT, TIME_FORMAT).format(TIME_FORMAT);
+          if (vm.calories != null && vm.calories.length > 0) {
+            temp = angular.copy(vm.calories[0]);
+            var keys = Object.keys(response.calories);
+            keys.forEach(function(key) {
+              temp[key] = response.calories[key];
+            });
+          } else {
+            temp = angular.copy(response.calories);
+          }
+          initController();
+        }
+      });
+    }
+    function CheckSetting() {
+      var checkedDates = [], total_calories = [];
+      vm.calories.forEach(function(d, i) {
+        var dd = $moment(d.date).format(DATE_FORMAT);
+        var index = checkedDates.indexOf(dd);
+        if (index === -1) {
+          index = checkedDates.push(dd);
+          total_calories.push(d.calories);
+        } else {
+          total_calories[index] += d.calories;
+        }
+      });
+      vm.calories.forEach(function(d, i) {
+        var dd = $moment(d.date).format(DATE_FORMAT);
+        var index = checkedDates.indexOf(dd);
+        d.color = total_calories[index] < vm.currentUser.setting ? 'green' : 'red';
+      })
+    }
+    function SetAlert(type, message) {
+      var alert = $alert({
+        type: type,
+        content: message,
+        container: '#alerts-container',
+        placement: 'top',
+        show: true,
+        duration: 2,
+        animation: 'am-fade-and-slide-top'
+      });
+    }
   }
 })();

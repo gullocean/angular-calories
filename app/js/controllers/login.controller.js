@@ -5,27 +5,31 @@
     .module('calories')
     .controller('LoginController', LoginController);
 
-  LoginController.$inject = ['$location', 'AuthenticationService', 'FlashService', 'ROLE'];
+  LoginController.$inject = ['$rootScope', '$location', 'AuthenticationService', 'FlashService', 'ROLE', 'RestAPI'];
 
-  function LoginController($location, AuthenticationService, FlashService, ROLE) {
+  function LoginController($rootScope, $location, AuthenticationService, FlashService, ROLE, RestAPI) {
     var vm = this;
 
     vm.login = login;
 
     (function initController() {
-      // reset login status
       AuthenticationService.ClearCredentials();
     })();
 
     function login() {
       vm.dataLoading = true;
-      AuthenticationService.Login(vm.username, vm.password, function(response) {
-        if (response.resultCode) {
-          response.currentUser.role = +response.currentUser.role;
-          response.currentUser.setting = +response.currentUser.setting;
-          response.currentUser.id = +response.currentUser.id;
-          AuthenticationService.SetCredentials(response);
-          switch(response.currentUser.role) {
+      RestAPI.Login(vm.username, vm.password, function(response) {
+        if (!response.resultCode) {
+          FlashService.Success(response.message);
+          vm.currentUser = {};
+          vm.currentUser.username = response.currentUser.username;
+          vm.currentUser.id       = +response.currentUser.id;
+          vm.currentUser.role     = +response.currentUser.role;
+          vm.currentUser.setting  = +response.currentUser.setting;
+          vm.token                = response.token;
+          AuthenticationService.SetCredentials('currentUser', vm.currentUser);
+          vm.dataLoading = false;
+          switch(vm.currentUser.role) {
             case ROLE.ADMIN:
               $location.path('/admin-home');
               break;
@@ -37,7 +41,7 @@
               break;
           }
         } else {
-          FlashService.Error(response.resultString);
+          FlashService.Error(response.message);
           vm.dataLoading = false;
         }
       });

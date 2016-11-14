@@ -13,14 +13,10 @@
       'ngAnimate',
       'ngSanitize',
       'mgcrea.ngStrap',
-      'angular-momentjs'
+      'angular-momentjs',
+      'angularSpinner'
     ])
     .config(config)
-    .config(function($modalProvider) {
-      angular.extend($modalProvider.defaults, {
-        html: true
-      });
-    })
     .run(run)
     .constant('ROLE', {
       ADMIN: 0,
@@ -28,13 +24,23 @@
       REGULAR_USER: 2
     })
     .constant('DATE_FORMAT', 'YYYY-MM-DD')
-    .constant('TIME_FORMAT', 'HH:mm:ss')
-    .constant('API_URL', 'http://192.168.0.28/api/')
+    .constant('TIME_FORMAT', 'HH:mm')
+    .constant('API_URL', 'http://192.168.0.28/RestAPI/api/')
+    .factory('httpRequestInterceptor', function () {
+      return {
+        request: function (config) {
+          config.headers['Authorization'] = 'Basic d2VudHdvcnRobWFuOkNoYW5nZV9tZQ==';
+          config.headers['Accept'] = 'application/json;odata=verbose';
+          return config;
+        }
+      };
+    })
     .filter("rangeDate", function($moment, DATE_FORMAT, TIME_FORMAT) {
       return function(items, filterDate) {
-        if (items === null || angular.isUndefined(items)) return null;
+        if (angular.isUndefined(items) || items === null) return null;
+        if (angular.isUndefined(filterDate) || filterDate === null) return items;
 
-        var minDate, maxDate, minTime, maxTime;
+        var minDate = $moment(), maxDate = $moment(), minTime = $moment(), maxTime = $moment();
 
         for (var i in items) {
           if (i == 0) {
@@ -48,16 +54,22 @@
           if (minTime.isAfter($moment(items[i].time, TIME_FORMAT)))  minTime = $moment(items[i].time, TIME_FORMAT);
           if (maxTime.isBefore($moment(items[i].time, TIME_FORMAT))) maxTime = $moment(items[i].time, TIME_FORMAT);
         }
+        var df, dt, tf, tt;
+        if (angular.isUndefined(filterDate.date)) {
+          df = minDate.subtract(1, 'days');
+          dt = maxDate.add(1, 'days');
+        } else {
+          df = filterDate.date.startDate === null ? minDate.subtract(1, 'days') : $moment(filterDate.date.startDate);
+          dt = filterDate.date.endDate === null ? maxDate.add(1, 'days') : $moment(filterDate.date.endDate);
+        }
 
-        var df = filterDate.date.startDate,
-            dt = filterDate.date.endDate,
-            tf = filterDate.time.startTime,
-            tt = filterDate.time.endTime;
-
-        df = df === null ? minDate.subtract(1, 'days') : $moment(df, DATE_FORMAT);
-        dt = dt === null ? maxDate.add(1, 'days') : $moment(dt, DATE_FORMAT);
-        tf = tf === null ? minTime.subtract(1, 'minutes') : $moment($moment(tf).format(TIME_FORMAT), TIME_FORMAT);
-        tt = tt === null ? maxTime.add(1, 'minutes') : $moment($moment(tt).format(TIME_FORMAT), TIME_FORMAT);
+        if (angular.isUndefined(filterDate.time)) {
+          tf = minTime.subtract(1, 'minutes');
+          tt = maxTime.add(1, 'minutes');
+        } else {
+          tf = filterDate.time.startTime === null ? minTime.subtract(1, 'minutes') : $moment($moment(filterDate.time.startTime).format(TIME_FORMAT), TIME_FORMAT);
+          tt = filterDate.time.endTime === null ? maxTime.add(1, 'minutes') : $moment($moment(filterDate.time.endTime).format(TIME_FORMAT), TIME_FORMAT);
+        }
 
         var result = [];     
         for (var i in items){
@@ -73,14 +85,9 @@
       };
     });
 
-  function parseDate(input) {
-    var parts = input.split('-');
-    return new Date(parts[2], parts[1]-1, parts[0]); 
-  }
+  config.$inject = ['$routeProvider', '$locationProvider', '$momentProvider', '$httpProvider', '$modalProvider'];
 
-  config.$inject = ['$routeProvider', '$locationProvider', '$momentProvider'];
-
-  function config($routeProvider, $locationProvider, $momentProvider) {
+  function config($routeProvider, $locationProvider, $momentProvider, $httpProvider, $modalProvider) {
     $routeProvider
       .when('/admin-home', {
         controller: 'AdminHomeController',
@@ -114,25 +121,28 @@
     $momentProvider
       .asyncLoading(false)
       .scriptUrl('node_modules/moment/min/moment.min.js');
+
+    angular
+      .extend($modalProvider.defaults, {
+        html: true
+      });
   }
 
   run.$inject = ['$rootScope', '$location', '$cookieStore', '$http'];
 
   function run($rootScope, $location, $cookieStore, $http) {
     // keep user logged in after page refresh
-    $rootScope.globals = $cookieStore.get('globals') || {};
-    if ($rootScope.globals.currentUser) {
-      $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata; // jshint ignore:line
+    $rootScope.currentUser = $cookieStore.get('currentUser') || {};
+    if ($rootScope.currentUser) {
+      $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.currentUser.authdata; // jshint ignore:line
     }
-
     $rootScope.$on('$locationChangeStart', function(event, next, current) {
       // redirect to login page if not logged in and trying to access a restricted page
-      /*var restrictedPage = $.inArray($location.path(), ['/login', '/register']) === -1;
-      var loggedIn = $rootScope.globals.currentUser;
+      var restrictedPage = $.inArray($location.path(), ['/login', '/register']) === -1;
+      var loggedIn = $rootScope.currentUser;
       if (restrictedPage && !loggedIn) {
           $location.path('/login');
-      }*/
+      }
     });
   }
-
 })();
