@@ -18,7 +18,7 @@
 				</div>
 			</div>
 			<div class="col-md-2">
-				<button class="btn btn-primary text-capitalize" ng-click="showModal({cmd: 'create'});">add</button>
+				<button class="btn btn-primary" ng-click="showModal({cmd: 'create'});">Create User</button>
 			</div>
 		</div>
 		<div class="row">
@@ -37,9 +37,9 @@
 								<td title="'setting'" filter="{ setting: 'number'}" sortable="'setting'">{{user.setting==null ? '-' : user.setting}}</td>
 								<td title="'role'" filter="{ role: 'text'}" sortable="'role'">{{getUserLabel(user)}}</td>
 								<td title="'edit'">
-									<button class="btn btn-primary text-capitalize" ng-click="showModal({cmd:'edit', user:user});"><i class="fa fa-edit fa-lg m-t-2"></i>edit</button>
-									<button class="btn btn-primary text-capitalize" ng-click="showModal({cmd:'delete', user:user});">delete</button>
-									<button ng-if="isRegularUser(user);" class="btn btn-primary text-capitalize" ng-click="onView(user);">view</button>
+									<button class="btn btn-primary text-capitalize" ng-click="showModal({cmd:'edit', user:user});">edit</button>
+									<button class="btn btn-danger text-capitalize" ng-click="showModal({cmd:'delete', user:user});">delete</button>
+									<button ng-if="isRegularUser(user);" class="btn btn-info text-capitalize" ng-click="onView(user);">view</button>
 								</td>
 							</tr>
 						</table>

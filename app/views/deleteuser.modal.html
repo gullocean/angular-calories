@@ -8,13 +8,13 @@
 			<div class="modal-body">
 				<form name="datepickerForm" class="form-inline" role="form">
 					<div class="row" ng-class="{'has-error': datepickerForm.date.$invalid}">
-						<label class="control-label col-md-8 text-right" ng-bind-html="content">Would you delete this calories?</label>
+						<label class="control-label col-md-8 text-right" ng-bind-html="content">Are you sure you want to delete this calories?</label>
 					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" ng-click="$hide()">Cancel</button>
-				<button type="button" class="btn btn-primary" ng-click="onDeleteUser(vm.selected_user);$hide();">Submit</button>
+				<button type="button" class="btn btn-default text-capitalize" ng-click="$hide()">Cancel</button>
+				<button type="button" class="btn btn-danger text-capitalize" ng-click="onDeleteUser(vm.selected_user);$hide();">Submit</button>
 			</div>
 		</div>
 	</div>

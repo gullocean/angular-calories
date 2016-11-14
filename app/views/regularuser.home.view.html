@@ -30,7 +30,7 @@
 			</div>
 			<div class="col-md-3">
 				<button class="btn btn-primary text-capitalize" ng-disabled="form.$invalid || vm.dataLoading" ng-click="onUpdateSetting();vm.flagEdit=!vm.flagEdit;">{{vm.flagEdit ? "update" : "edit"}}</button>
-				<button ng-if="vm.flagEdit" class="btn btn-primary text-capitalize" ng-click="onCancelSetting();">cancel</button>
+				<button ng-if="vm.flagEdit" class="btn btn-default text-capitalize" ng-click="onCancelSetting();">cancel</button>
 			</div>
 		</div>
 		<div class="row">
@@ -55,7 +55,7 @@
 				</div>
 			</div>
 			<div class="col-md-3">
-				<button type="button" class="btn btn-primary text-capitalize" data-animation="am-fade-and-slide-top" ng-click="showModal({cmd:'create'})">add</button>
+				<button type="button" class="btn btn-primary" data-animation="am-fade-and-slide-top" ng-click="showModal({cmd:'create'})">Add Calories</button>
 			</div>
 		</div>
 		<div class="row">
@@ -74,8 +74,8 @@
 						<td title="'meal'" filter="{ meal: 'text'}" sortable="'meal'">{{meal.meal}}</td>
 						<td title="'calories'" filter="{ calories: 'number'}" sortable="'calories'">{{meal.calories}}</td>
 						<td title="'edit'">
-							<button class="btn btn-primary text-capitalize" ng-click="showModal({cmd:'edit', calories:meal});">edit</button>
-							<button class="btn btn-primary text-capitalize" ng-click="showModal({cmd:'delete', calories:meal});">delete</button>
+							<button class="btn btn-primary" ng-click="showModal({cmd:'edit', calories:meal});">Edit</button>
+							<button class="btn btn-danger" ng-click="showModal({cmd:'delete', calories:meal});">Delete</button>
 						</td>
 					</tr>
 				</table>
